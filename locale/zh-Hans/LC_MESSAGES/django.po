@@ -1,0 +1,68 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-07-12 14:27+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Dad Heros"
+msgstr "被克制英雄"
+
+msgid "Son Heros"
+msgstr "克制英雄"
+
+msgid "Hero Name"
+msgstr "英雄名"
+
+msgid "Hero"
+msgstr "英雄"
+
+msgid "Hero Type"
+msgstr "英雄类型"
+
+msgid "Strength"
+msgstr "力量"
+
+msgid "Intelligence"
+msgstr "智力"
+
+msgid "Agile"
+msgstr "敏捷"
+
+msgid "Restrain Level"
+msgstr "克制程度"
+
+msgid "Reason"
+msgstr "克制理由"
+
+#: heros/templates/hero_list.html:10
+msgid "Export"
+msgstr ""
+
+#: heros/templates/hero_list.html:15
+msgid "Import"
+msgstr ""
+
+#: heros/templates/hero_list.html:20
+msgid "Update"
+msgstr ""
+
+#: heros/views.py:24
+msgid "Users"
+msgstr ""
+
+#: templates/_base_list.html:36
+msgid "Search"
+msgstr ""
