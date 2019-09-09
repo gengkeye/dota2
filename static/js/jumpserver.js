@@ -1,4 +1,4 @@
-//jumpserver 自定义js 2015-01-29
+//dota2 自定义js 2015-01-29
 
 //此函数用于checkbox的全选和反选
 var checked=false;
@@ -419,10 +419,10 @@ function makeLabel(data) {
 
 
 
-var jumpserver = {};
-jumpserver.checked = false;
-jumpserver.selected = {};
-jumpserver.language = {
+var dota2 = {};
+dota2.checked = false;
+dota2.selected = {};
+dota2.language = {
     processing: gettext('Loading ...'),
     search: gettext('Search'),
     select: {
@@ -444,7 +444,7 @@ jumpserver.language = {
         last: "»"
     }
 };
-jumpserver.initDataTable = function (options) {
+dota2.initDataTable = function (options) {
   // options = {
   //    ele *: $('#dataTable_id'),
   //    ajax_url *: '{% url 'users:user-list-api' %}',
@@ -487,17 +487,17 @@ jumpserver.initDataTable = function (options) {
         },
         columns: options.columns || [],
         select: options.select || select,
-        language: jumpserver.language,
+        language: dota2.language,
         lengthMenu: [[10, 15, 25, 50, -1], [10, 15, 25, 50, "All"]]
     });
     table.on('select', function(e, dt, type, indexes) {
         var $node = table[ type ]( indexes ).nodes().to$();
         $node.find('input.ipt_check').prop('checked', true);
-        jumpserver.selected[$node.find('input.ipt_check').prop('id')] = true
+        dota2.selected[$node.find('input.ipt_check').prop('id')] = true
     }).on('deselect', function(e, dt, type, indexes) {
         var $node = table[ type ]( indexes ).nodes().to$();
         $node.find('input.ipt_check').prop('checked', false);
-        jumpserver.selected[$node.find('input.ipt_check').prop('id')] = false
+        dota2.selected[$node.find('input.ipt_check').prop('id')] = false
     }).on('draw', function(){
         $('#op').html(options.op_html || '');
         $('#uc').html(options.uc_html || '');
@@ -511,11 +511,11 @@ jumpserver.initDataTable = function (options) {
     $('.ipt_check_all').on('click', function() {
       if ($(this).prop("checked")) {
           $(this).closest('table').find('.ipt_check').prop('checked', true);
-          jumpserver.checked = true;
+          dota2.checked = true;
           table.rows({search:'applied', page:'current'}).select();
       } else {
           $(this).closest('table').find('.ipt_check').prop('checked', false);
-          jumpserver.checked = false;
+          dota2.checked = false;
           table.rows({search:'applied', page:'current'}).deselect();
       }
     });
@@ -523,17 +523,17 @@ jumpserver.initDataTable = function (options) {
     return table;
 };
 
-jumpserver.initStaticTable = function (selector) {
+dota2.initStaticTable = function (selector) {
     $(selector).DataTable({
         "searching": false,
         "bInfo": false,
         "paging": false,
         "order": [],
-        "language": jumpserver.language
+        "language": dota2.language
     });
 };
 
-jumpserver.initServerSideDataTable = function (options) {
+dota2.initServerSideDataTable = function (options) {
   // options = {
   //    ele *: $('#dataTable_id'),
   //    ajax_url *: '{% url 'users:user-list-api' %}',
@@ -636,7 +636,7 @@ jumpserver.initServerSideDataTable = function (options) {
         },
         columns: options.columns || [],
         select: options.select || select,
-        language: jumpserver.language,
+        language: dota2.language,
         lengthMenu: [[15, 25, 50, 9999], [15, 25, 50, 'All']]
     });
     table.selected = [];
@@ -644,7 +644,7 @@ jumpserver.initServerSideDataTable = function (options) {
     table.on('select', function(e, dt, type, indexes) {
         var $node = table[ type ]( indexes ).nodes().to$();
         $node.find('input.ipt_check').prop('checked', true);
-        jumpserver.selected[$node.find('input.ipt_check').prop('id')] = true;
+        dota2.selected[$node.find('input.ipt_check').prop('id')] = true;
         if (type === 'row') {
             var rows = table.rows(indexes).data();
             $.each(rows, function (id, row) {
@@ -657,7 +657,7 @@ jumpserver.initServerSideDataTable = function (options) {
     }).on('deselect', function(e, dt, type, indexes) {
         var $node = table[ type ]( indexes ).nodes().to$();
         $node.find('input.ipt_check').prop('checked', false);
-        jumpserver.selected[$node.find('input.ipt_check').prop('id')] = false;
+        dota2.selected[$node.find('input.ipt_check').prop('id')] = false;
         if (type === 'row') {
             var rows = table.rows(indexes).data();
             $.each(rows, function (id, row) {
@@ -697,7 +697,7 @@ jumpserver.initServerSideDataTable = function (options) {
         }
     });
 
-    // jumpserver.table = table;
+    // dota2.table = table;
     return table;
 };
 

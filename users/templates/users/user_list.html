@@ -1,0 +1,343 @@
+{% extends '_base_list.html' %}
+{% load i18n static %}
+{% block table_search %}
+<div class="" style="float: right">
+   <div class=" btn-group">
+        <button data-toggle="dropdown" class="btn btn-default btn-sm dropdown-toggle">CSV <span class="caret"></span></button>
+        <ul class="dropdown-menu">
+            <li>
+                <a class=" btn_export" tabindex="0">
+                <span>{% trans "Export" %}</span>
+                </a>
+            </li>
+            <li>
+                <a class=" btn_import" data-toggle="modal" data-target="#import_modal" tabindex="0">
+                <span>{% trans "Import" %}</span>
+                </a>
+            </li>
+            <li>
+                <a class=" btn_update" data-toggle="modal" data-target="#update_modal" tabindex="0">
+                <span>{% trans "Update" %}</span>
+                </a>
+            </li>
+        </ul>
+   </div>
+</div>
+{% endblock %}
+{% block table_container %}
+{% if user.is_superadmin %}
+    <div class="uc pull-left m-l-5 m-r-5">
+        <a href="{% url "users:user-create" %}" class="btn btn-sm btn-primary"> {% trans "Create user" %} </a>
+    </div>
+{% endif %}
+<div style="overflow:auto;width: 100%">
+<table class="table table-striped table-bordered table-hover " id="user_list_table" >
+    <thead>
+        <tr>
+            <th class="text-center">
+                <input id="" type="checkbox" class="ipt_check_all">
+            </th>
+            <th class="text-center">{% trans 'Name' %}</th>
+            <th class="text-center">{% trans 'Username' %}</th>
+            <th class="text-center">{% trans 'Role' %}</th>
+            <th class="text-center">{% trans 'User group' %}</th>
+            <th class="text-center">{% trans 'Source' %}</th>
+            <th class="text-center">{% trans 'Validity' %}</th>
+            <th class="text-center">{% trans 'Action' %}</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+</div>
+{% if user.is_superadmin %}
+    <div id="actions" class="hide">
+        <div class="input-group">
+            <select class="form-control m-b" style="width: auto" id="slct_bulk_update">
+                <option value="delete">{% trans 'Delete selected' %}</option>
+                <option value="update">{% trans 'Update selected' %}</option>
+                <option value="deactive">{% trans 'Deactive selected' %}</option>
+                <option value="active">{% trans 'Active selected' %}</option>
+            </select>
+            <div class="input-group-btn pull-left" style="padding-left: 5px;">
+                <button id='btn_bulk_update' style="height: 32px;"  class="btn btn-sm btn-primary">
+                 {% trans 'Submit' %}
+                </button>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% include "users/_user_import_modal.html" %}
+{% include "users/_user_update_modal.html" %}
+{% endblock %}
+{% block content_bottom_left %}{% endblock %}
+{% block custom_foot_js %}
+<script src="{% static 'js/jquery.form.min.js' %}"></script>
+<script>
+var users_table = 0;
+function initTable() {
+    var is_superuser = '{{ user.is_superuser }}';
+    var options = {
+        ele: $('#user_list_table'),
+        columnDefs: [
+            {targets: 1, createdCell: function (td, cellData, rowData) {
+                cellData = htmlEscape(cellData);
+                var detail_btn = '<a href="{% url "users:user-detail" pk=DEFAULT_PK %}">' + cellData + '</a>';
+                $(td).html(detail_btn.replace("{{ DEFAULT_PK }}", rowData.id));
+             }},
+            {targets: 4, createdCell: function (td, cellData) {
+                var innerHtml = cellData.length > 20 ? cellData.substring(0, 20) + '...': cellData;
+                $(td).html('<span href="javascript:void(0);" data-toggle="tooltip" title="' + cellData + '">' + innerHtml + '</span>');
+            }},
+            {targets: 6, createdCell: function (td, cellData) {
+                if (cellData) {
+                    $(td).html('<i class="fa fa-check text-navy"></i>')
+                } else {
+                    $(td).html('<i class="fa fa-times text-danger expired"></i>')
+                }
+            }},
+            {targets: 7, createdCell: function (td, cellData, rowData) {
+                var update_btn = "";
+                if (rowData.username === "{{ request.user.username }}" || (rowData.username === 'admin' && "{{ request.user.username }}" != 'admin')) { 
+                    update_btn = '<a class="btn btn-xs disabled btn-info">{% trans "Update" %}</a>';
+                }
+                else{
+                    update_btn = '<a href="{% url "users:user-update" pk=DEFAULT_PK %}" class="btn btn-xs btn-info">{% trans "Update" %}</a>'.replace('00000000-0000-0000-0000-000000000000', cellData);
+                }
+
+                var del_btn = "";
+                if (rowData.username === "admin" || rowData.username === "{{ request.user.username }}" || (rowData.role.name === 'Admin' && ('{{ request.user.role.name }}' !== 'Admin'))) {
+                    del_btn = '<a class="btn btn-xs btn-danger m-l-xs" disabled>{% trans "Delete" %}</a>'
+                            .replace('{{ DEFAULT_PK }}', cellData)
+                            .replace('99991938', rowData.name);
+                } else {
+                    del_btn = '<a class="btn btn-xs btn-danger m-l-xs btn_user_delete" data-uid="{{ DEFAULT_PK }}" data-name="99991938">{% trans "Delete" %}</a>'
+                            .replace('{{ DEFAULT_PK }}', cellData)
+                            .replace('99991938', rowData.name);
+                }
+                $(td).html(update_btn+del_btn)
+            }},
+        ],
+        ajax_url: '{% url "api-users:user-list" %}',
+        columns: [
+            {data: "id"}, 
+            {data: "name" }, 
+            {data: "username" }, 
+            {data: "role_display" },
+            {data: "groups_display" }, 
+            {data: "get_source_display" }, 
+            {data: "is_valid" }, 
+            {data: "id" }
+        ],
+        op_html: $('#actions').html()
+    };
+    users_table = jumpserver.initServerSideDataTable(options);
+    return users_table
+}
+
+
+$(document).ready(function(){
+    initTable();
+    var fields = $('#fm_user_bulk_update .form-group');
+    $.each(fields, function (index, value) {
+        console.log(value)
+    });
+    $('.btn_export').click(function () {
+        var users = users_table.selected;
+        var data = {
+            'resources': users
+        };
+        var search = $("input[type='search']").val();
+        var props = {
+            method: "POST",
+            body: JSON.stringify(data),
+            success_url: "{% url 'api-users:user-list' %}",
+            format: 'csv',
+            params: {
+                search: search
+            }
+        };
+        APIExportData(props);
+    });
+
+    $('#btn_import_confirm').click(function() {
+        var url = "{% url 'api-users:user-list' %}";
+        var file = document.getElementById('id_file').files[0];
+        if(!file){
+            toastr.error("{% trans "Please select file" %}");
+            return
+        }
+        var data_table = $('#user_list_table').DataTable();
+        APIImportData({
+            url: url,
+            method: "POST",
+            body: file,
+            data_table: data_table
+        });
+    });
+    $('#download_update_template').click(function () {
+        var users = users_table.selected;
+        var data = {
+            'resources': users
+        };
+        var search = $("input[type='search']").val();
+        var props = {
+            method: "POST",
+            body: JSON.stringify(data),
+            success_url: "{% url 'api-users:user-list' %}?format=csv&template=update",
+            format: 'csv',
+            params: {
+                search: search
+            }
+        };
+        APIExportData(props);
+    });
+    $('#btn_update_confirm').click(function() {
+        var url = "{% url 'api-users:user-list' %}";
+        var file = document.getElementById('update_file').files[0];
+        if(!file){
+            toastr.error("{% trans "Please select file" %}");
+            return
+        }
+        var data_table = $('#user_list_table').DataTable();
+        APIImportData({
+            url: url,
+            method: "PUT",
+            body: file,
+            data_table: data_table
+        });
+    });
+
+}).on('click', '#btn_bulk_update', function(){
+    var action = $('#slct_bulk_update').val();
+    var id_list = users_table.selected;
+    if (id_list.length === 0) {
+        return false;
+    }
+    var the_url = "{% url 'api-users:user-list' %}";
+    var data = {
+        'resources': id_list
+    };
+    function refreshTag() {
+        $('#user_list_table').DataTable().ajax.reload()
+    }
+    function doDeactive() {
+        var data = [];
+        $.each(id_list, function(index, object_id) {
+            var obj = {"pk": object_id, "is_active": false};
+            data.push(obj);
+        });
+        function success() {
+            setTimeout( function () {
+                window.location.reload();}, 300);
+        }
+        APIUpdateAttr({
+            url: the_url,
+            method: 'PATCH',
+            body: JSON.stringify(data),
+            success: success
+        });
+    }
+    function doActive() {
+        var data = [];
+        $.each(id_list, function(index, object_id) {
+            var obj = {"pk": object_id, "is_active": true};
+            data.push(obj);
+        });
+        function success() {
+            setTimeout( function () {
+                window.location.reload();}, 300);
+        }
+        APIUpdateAttr({
+            url: the_url,
+            method: 'PATCH',
+            body: JSON.stringify(data),
+            success: success
+        });
+    }
+    function doDelete() {
+        swal({
+            title: "{% trans 'Are you sure?' %}",
+            text: "{% trans 'This will delete the selected users !!!' %}",
+            type: "warning",
+            showCancelButton: true,
+            cancelButtonText: "{% trans 'Cancel' %}",
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "{% trans 'Confirm' %}",
+            closeOnConfirm: false
+        },function () {
+            function success(data) {
+                url = setUrlParam(the_url, 'spm', data.spm);
+                APIUpdateAttr({
+                    url:url,
+                    method:'DELETE',
+                    success:refreshTag,
+                    flash_message:false,
+                 });
+                var msg = "{% trans 'User Deleted.' %}";
+                swal("{% trans 'User Delete' %}", msg, "success");
+            }
+            function fail() {
+                var msg = "{% trans 'User Deleting failed.' %}";
+                swal("{% trans 'User Delete' %}", msg, "error");
+            }
+            APIUpdateAttr({
+                url: "{% url 'api-common:resources-cache' %}",
+                method:'POST',
+                body:JSON.stringify(data),
+                success:success,
+                error:fail
+             })
+        })
+    }
+
+    function doUpdate() {
+        function fail(data) {
+            toastr.error(JSON.parse(data))
+        }
+        function success(data) {
+            var url = "{% url 'users:user-bulk-update' %}";
+            location.href= setUrlParam(url, 'spm', data.spm);
+         }
+        APIUpdateAttr({
+                url: "{% url 'api-common:resources-cache' %}",
+                method:'POST',
+                body:JSON.stringify(data),
+                flash_message:false,
+                success:success,
+                error:fail
+        })
+     }
+    switch(action) {
+        case 'deactive':
+            doDeactive();
+            break;
+        case 'delete':
+            doDelete();
+            break;
+        case 'update':
+            doUpdate();
+            break;
+        case 'active':
+            doActive();
+            break;
+        default:
+            break;
+    }
+}).on('click', '.btn_user_delete', function(){
+    var $this = $(this);
+    var name = $this.data('name');
+    var uid = $this.data('uid');
+    var the_url = '{% url "api-users:user-detail" pk=DEFAULT_PK %}'.replace("{{ DEFAULT_PK }}", uid);
+    objectDelete($this, name, the_url);
+}).on('click', '.expired', function () {
+    var msg = '{% trans "User is expired" %}';
+    toastr.error(msg)
+}).on('click', '.inactive', function () {
+    var msg = '{% trans 'User is inactive' %}';
+    toastr.error(msg)
+
+})
+</script>
+{% endblock %}
+

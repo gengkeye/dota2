@@ -5,27 +5,26 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit">
-    <title>Dota2英雄克制关系表</title>
+    <title>{{ JMS_TITLE }}</title>
     <link rel="shortcut icon" href="{{ FAVICON_URL }}" type="image/x-icon">
-    <link href="{% static 'css/plugins/select2/select2.min.css' %}" rel="stylesheet">
-    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'css/style.css' %}" rel="stylesheet">
-
-    <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
-    <script src="{% static 'js/jquery-2.1.1.js' %}"></script>
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'js/plugins/select2/select2.full.min.js' %}"></script>
-    <script src="{% static 'js/jumpserver.js' %}"></script>
+    {% include '_head_css_js.html' %}
+    <link href="{% static 'css/dota2.css' %}" rel="stylesheet">
     {% block custom_head_css_js %} {% endblock %}
 </head>
 
 <body>
 <div id="wrapper">
+    {% include '_left_side_bar.html' %}
     <div id="page-wrapper" class="gray-bg">
+        {% include '_header_bar.html' %}
+        {% block help_message %} {% endblock %}
+        {% include '_message.html' %}
         {% block content %}{% endblock %}
+        {% include '_footer.html' %}
     </div>
 </div>
 
 </body>
+{% include '_foot_js.html' %}
 {% block custom_foot_js %} {% endblock %}
 </html>

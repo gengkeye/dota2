@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load bootstrap3 %}
+
+
+{% block custom_head_css_js %}
+{{ wizard.form.media }}
+<link href="{% static 'css/plugins/steps/jquery.steps.css' %}" rel="stylesheet" type="text/css">
+{% endblock %}
+{% block first_login_message %}{% endblock %}
+
+{% block content %}
+<div class="wrapper wrapper-content animated fadeInRight">
+  <div class="row">
+    <div class="col-lg-12">
+        <div class="ibox">
+            <div class="ibox-title">
+              <h5>{% trans 'First Login' %}</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-wrench"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="ibox-content">
+              <div class="wizard">
+                  <div class="steps clearfix">
+                      <ul role="tablist">
+                          {% for step in wizard.steps.all %}
+                              <li role="tab" class="{% ifequal step wizard.steps.first %}first{% endifequal %} {% ifequal step wizard.steps.current %}current{% else %}disabled{% endifequal %} {% ifequal step wizard.steps.last %}last{% endifequal %}"
+                                  aria-disabled="false" aria-selected="true">
+                                  <a class="fl_goto" name="wizard_goto_step" data-goto="{{ step }}">
+                                   <span class="number">
+                                       {% ifequal step '0' %}
+                                           1. {% trans "Profile" %}
+                                       {% endifequal %}
+                                       {% ifequal step '1' %}
+                                           2. {% trans "Public key" %}
+                                       {% endifequal %}
+                                       {% ifequal step '2' %}
+                                           3. {% trans "MFA" %}
+                                       {% endifequal %}
+                                       {% ifequal step '3' %}
+                                           4. {% trans "Finish" %}
+                                       {% endifequal %}
+                                   </span>
+                                  </a>
+                              </li>
+                          {% endfor >%}
+                      </ul>
+                  </div>
+                  <div class="content clearfix" style="background-color: #eee; border-radius:5px;">
+                      <div class="row">
+                          <form action="" method="post" class="form col-lg-8 p-m" id="fl_form" style="padding-left: 40px;">
+                              {% csrf_token %}
+                              {{ wizard.management_form }}
+                              {% if form.finish_description %}
+                                  <b>{{ form.finish_description }}</b>
+                                  <br>
+                                  <textarea style="width: 1000px;height: 200px;">
+    1.妥善保管自己的密码、私钥，不能泄漏给他人，或给予他人使用
+    2.登录方式使用密码+谷歌两步验证（MFA）方式，WEB和SSH登录使用同一密码
+    3.用户名均使用个人英文名小写，不包含姓
+    4.第一次登录后需更改初始密码，否则会被禁止登录
+    5.资产授权方式为，管理员给组长授权，组长给组员授权。授权的命名规则：用户名-系统用户名
+    6.资产申请方式为，组员能且只能申请组长拥有的资产，组长可向管理员申请所有资产。申请授权的命名规则：用户名-系统用户名
+    7.资产授权和资产申请都包含生效的起止时间，时间不在此区间的资产将无法登录
+    8.Windows资产请使用Web终端登录
+    9.所有用户登录机器所做的所有操作都有日志，包括命令记录和录像，请谨慎操作。
+                                  </textarea>
+                                  <input type="checkbox" id="acceptTerms">
+                                  <label for="acceptTerms" style="margin-top:20px">{% trans "I agree with the terms and conditions." %}</label>
+                                  <p id="noTerms" class="red-fonts" style="visibility: hidden; font-size: 10px; margin-top: 10px;">* {% trans 'Please choose the terms and conditions.' %}</p>
+                              {% endif %}
+
+                              {% bootstrap_form wizard.form %}
+
+                              {% if form.mfa_description %}
+                                  <b>{{ form.mfa_description }}</b>
+                              {% endif %}
+
+                              {% if form.pubkey_description %}
+                                  <span>或者：</span>
+                                  <a type="button" id="btn-reset-pubkey">{{ form.pubkey_description }}</a>
+                              {% endif %}
+
+                          </form>
+                          <div class="col-lg-4">
+                              <div class="text-center">
+                                  <div style="margin-top: 20px">
+                                      <i class="fa fa-sign-in" style="font-size: 180px;color: #e5e5e5 "></i>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                <div class="actions clearfix">
+                    <ul>
+                        {% if wizard.steps.prev %}
+                            <li><a class="fl_goto" name="wizard_goto_step" data-goto="{{ wizard.steps.prev }}">{% trans "Previous" %}</a></li>
+                        {% endif %}
+
+                        {% if wizard.steps.next %}
+                            <li><a id="fl_submit" >{% trans "Next" %}</a></li>
+                        {% else %}
+                            <li><a id="fl_submit" style="width:66px;text-align: center;">{% trans "Finish" %}</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+              </div>
+
+            </div>
+
+        </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block custom_foot_js %}
+<script>
+    $(document).on('click', ".fl_goto", function(){
+        var $form = $('#fl_form');
+        $('<input />', {'name': 'wizard_goto_step', 'value': $(this).data('goto'), 'type': 'hidden'}).appendTo($form);
+        $form.submit();
+        return false;
+    }).on('click', '#fl_submit', function(){
+        var isFinish = $('#fl_submit').html() === "{% trans 'Finish' %}";
+        var noChecked = !$('#acceptTerms').prop('checked');
+        if ( isFinish && noChecked){
+            $('#noTerms').css('visibility', 'visible');
+        }
+        else{
+            $('#fl_form').submit();
+            return false;
+        }
+    }).on('click', '#btn-reset-pubkey', function () {
+        var the_url = '{% url "users:user-pubkey-generate" %}';
+        window.open(the_url, "_blank");
+        $('#fl_form').submit();
+    })
+
+</script>
+{% endblock %}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-12 14:27+0800\n"
+"POT-Creation-Date: 2019-07-29 01:25+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,33 +17,41 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-msgid "Dad Heros"
-msgstr "被克制英雄"
-
-msgid "Son Heros"
-msgstr "克制英雄"
-
-msgid "Hero Name"
-msgstr "英雄名"
-
-msgid "Hero"
-msgstr "英雄"
-
-msgid "Hero Type"
-msgstr "英雄类型"
-
+#: heros/models.py:12
 msgid "Strength"
 msgstr "力量"
 
+#: heros/models.py:13
 msgid "Intelligence"
 msgstr "智力"
 
+#: heros/models.py:14
 msgid "Agile"
 msgstr "敏捷"
 
+#: heros/models.py:16 heros/templates/hero_list.html:32
+#, fuzzy
+#| msgid "Hero Name"
+msgid "Name"
+msgstr "英雄名"
+
+#: heros/models.py:17
+msgid "Hero Type"
+msgstr "英雄类型"
+
+#: heros/models.py:18 heros/models.py:34 heros/templates/hero_list.html:33
+msgid "Dad Heros"
+msgstr "被克制英雄"
+
+#: heros/models.py:35 heros/templates/hero_list.html:34
+msgid "Son Heros"
+msgstr "克制英雄"
+
+#: heros/models.py:36
 msgid "Restrain Level"
 msgstr "克制程度"
 
+#: heros/models.py:37
 msgid "Reason"
 msgstr "克制理由"
 
@@ -66,3 +74,6 @@ msgstr ""
 #: templates/_base_list.html:36
 msgid "Search"
 msgstr ""
+
+#~ msgid "Hero"
+#~ msgstr "英雄"

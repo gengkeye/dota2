@@ -11,6 +11,13 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import sys
+
+from django.urls import reverse_lazy
+
+from .conf import load_user_config
+
+CONFIG = load_user_config()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -32,6 +39,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'heros.apps.HerosConfig',
+    'authentication.apps.AuthenticationConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,9 +57,24 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'authentication.backends.openid.middleware.OpenIDAuthenticationMiddleware',
 ]
 
 ROOT_URLCONF = 'dota2.urls'
+
+LOGIN_REDIRECT_URL = reverse_lazy('index')
+LOGIN_URL = reverse_lazy('authentication:login')
+
+BASE_SITE_URL = CONFIG.BASE_SITE_URL
+AUTH_OPENID = CONFIG.AUTH_OPENID or False
+AUTH_OPENID_SERVER_URL = CONFIG.AUTH_OPENID_SERVER_URL
+AUTH_OPENID_REALM_NAME = CONFIG.AUTH_OPENID_REALM_NAME
+AUTH_OPENID_CLIENT_ID = CONFIG.AUTH_OPENID_CLIENT_ID
+AUTH_OPENID_CLIENT_SECRET = CONFIG.AUTH_OPENID_CLIENT_SECRET
+AUTH_OPENID_BACKENDS = [
+    'authentication.backends.openid.backends.OpenIDAuthorizationPasswordBackend',
+    'authentication.backends.openid.backends.OpenIDAuthorizationCodeBackend',
+]
 
 TEMPLATES = [
     {
@@ -117,6 +140,7 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
 
 
 # Static files (CSS, JavaScript, Images)

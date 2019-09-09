@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
+{% block custom_head_css_js %}
+    <link href="{% static 'css/plugins/select2/select2.min.css' %}" rel="stylesheet">
+    <script src="{% static 'js/plugins/select2/select2.full.min.js' %}"></script>
+{% endblock %}
 {% block content %}
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
@@ -8,6 +12,7 @@
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
                     <h5>
+                        {{ action }}
                     </h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
@@ -59,6 +64,9 @@
                         <div class="col-sm-4">
                             {% block content_bottom_left %} {% endblock %}
                         </div>
+                        {% block table_pagination %}
+                        {% include '_pagination.html' %}
+                        {% endblock %}
                     </div>
                 </div>
             </div>

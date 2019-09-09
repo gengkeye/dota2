@@ -1,0 +1,11 @@
+from __future__ import absolute_import
+from celery import shared_task
+from users.models import User
+import uuid
+
+@shared_task
+def set_uuid():
+    for user in User.objects.filter(uuid=None):
+        user.uuid = uuid.uuid4()
+        user.save()
+

@@ -4,7 +4,7 @@ from rest_framework_bulk import BulkModelViewSet
 from heros.serializers import HeroSerializer
 from common.permissions import ReadOnly
 
-class UserViewSet(BulkModelViewSet):
+class HeroViewSet(BulkModelViewSet):
 	filter_fields = ('name',)
 	search_fields = filter_fields
 	serializer_class = HeroSerializer

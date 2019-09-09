@@ -8,8 +8,9 @@ from . import views
 app_name = 'heros'
 
 urlpatterns = [
-    path('create', views.HeroCreateView.as_view(), name='create-hero'),
-    path('<uuid:pk>/update', views.HeroCreateView.as_view(), name='update-hero'),
-    path('relationship/create', views.RelationshipCreateView.as_view(), name='create-relationship'),
-    path('relationship/<uuid:pk>/update', views.RelationshipCreateView.as_view(), name='update-relationship'),
+    path('heros/list', views.HeroCreateView.as_view(), name='heros-list'),
+    path('heros/create', views.HeroCreateView.as_view(), name='create-hero'),
+    path('heros/<uuid:pk>/update', views.HeroCreateView.as_view(), name='update-hero'),
+    path('heros/relationship/create', views.RelationshipCreateView.as_view(), name='create-relationship'),
+    path('heros/relationship/<uuid:pk>/update', views.RelationshipCreateView.as_view(), name='update-relationship'),
 ]
