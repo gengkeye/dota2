@@ -6,7 +6,7 @@ sshpubkeys==3.1.0
 itsdangerous==0.24
 celery==4.1.0
 passlib==1.7.1
-paramiko==2.4.1
+paramiko==2.4.2
 chardet==3.0.4
 djangorestframework_bulk==0.2.1
 python_keycloak_client==0.1.3
