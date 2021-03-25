@@ -13,4 +13,4 @@ python_keycloak_client==0.1.3
 config==0.4.2
 django_formtools==2.1
 keycloak==1.6.0
-PyYAML==5.1.2
+PyYAML==5.4
